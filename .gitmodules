@@ -1,0 +1,3 @@
+[submodule "array"]
+	path = array
+	url = git@github.com:ClaudioIndieGames/array.git
