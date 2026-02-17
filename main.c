@@ -1,47 +1,56 @@
 #include <stdio.h>
 #include "event.h"
 
-// scheduler
-event_scheduler s;
+// simulation
+simulation sim;
 
 // events
 event e1;
 event e2;
 
 // tasks
+task t1;
 void* task1(void* arg) {
-    printf("[%lds] Hi from task1 at thread %ld\n", s.sim_time, (unsigned long)pthread_self());
+    printf("[%lds] Hi from task1 at thread %ld\n", sim.time, (unsigned long)pthread_self());
     return NULL;
 }
 
+task t3;
 void* task3(void* arg) {
-    printf("[%lds] Hi from task3 at thread %ld\n", s.sim_time, (unsigned long)pthread_self());
+    printf("[%lds] Hi from task3 at thread %ld\n", sim.time, (unsigned long)pthread_self());
     return NULL;
 }
 
+task t2;
 void* task2(void* arg) {
-    printf("[%lds] Hi from task2 at thread %ld\n", s.sim_time, (unsigned long)pthread_self());
-    event_register_task(&e2, task3);
-    event_scheduler_schedule(&s, &e2, 10);
+    printf("[%lds] Hi from task2 at thread %ld\n", sim.time, (unsigned long)pthread_self());
+    event_register_task(&e2, &t3);
+    event_notify(&sim, &e2, 10);
     return NULL;
 }
 
 int main() {
     // constructor
-    event_scheduler_create(&s);
+    simulation_create(&sim);
     event_create(&e1);
     event_create(&e2);
+    task_create(&t1, task1, &t1, 0);
+    task_create(&t2, task2, &t2, 0);
+    task_create(&t3, task3, &t3, 0);
 
-    event_register_task(&e1, task1);
-    event_register_task(&e1, task2);
-    event_scheduler_schedule(&s, &e1, 10);
+    event_register_task(&e1, &t1);
+    event_register_task(&e1, &t2);
+    event_notify(&sim, &e1, 10);
 
-    event_scheduler_run_multi(&s);
+    simulation_start(&sim, false);
 
     // destructor
+    task_destroy(&t1);
+    task_destroy(&t2);
+    task_destroy(&t3);
     event_destroy(&e1);
     event_destroy(&e2);
-    event_scheduler_destroy(&s);
+    simulation_destroy(&sim);
 
     return 0;
 }
