@@ -3,7 +3,7 @@
 ###############################################################################
 
 # executable name
-EXE             := libcdes.a
+EXE             := main
 
 # build folder name
 BIN             := build
@@ -23,8 +23,7 @@ CXX             := g++
 AS              := gcc
 
 # linker
-#LD              := gcc
-LD              := ar
+LD              := gcc
 
 # object dump
 OBJDUMP         := objdump
@@ -44,7 +43,7 @@ MKDIR           := mkdir
 ###############################################################################
 
 # C flags
-CFLAGS          := -O0 -Wall -Wextra -ggdb -Iinclude -Ilib/array
+CFLAGS          := -O0 -Wall -Wextra -ggdb -Iinclude -I../../include -I../../lib/array
 
 # C++ flags
 CXXFLAGS        := 
@@ -53,8 +52,8 @@ CXXFLAGS        :=
 ASFLAGS         := 
 
 # linker flags
-#LDFLAGS         := -pthread
-LDFLAGS         := rcs
+LDFLAGS_PRE     := 
+LDFLAGS_POST    := -L../../build -lcdes -lpthread
 
 # object dump flags
 OBJDUMPFLAGS    := --source --all-headers --demangle --line-numbers --wide $(BIN)/$(EXE) > $(basename $(BIN)/$(EXE)).lst
@@ -75,11 +74,11 @@ MKDIRFLAGS      := -p
 
 # C files to compile
 CSRCS           := \
-	src/cdes_event.c \
-	src/cdes_task.c \
-	src/cdes_thread.c \
-	src/cdes_event_queue.c \
-	src/cdes_simulation.c 
+	src/simple_message.c \
+	src/simple_cpu.c \
+	src/simple_memory.c \
+	src/simple_soc.c \
+	src/main.c
 
 # additional C files to compile
 XCSRCS          := 
@@ -98,18 +97,15 @@ XASSRCS         :=
 
 # header files
 INCS            := \
-	include/cdes.h \
-	include/cdes_time.h \
-	include/cdes_module.h \
-	include/cdes_event.h \
-	include/cdes_task.h \
-	include/cdes_thread.h \
-	include/cdes_event_queue.h \
-	include/cdes_simulation.h
+	include/simple_message.h \
+	include/simple_cpu.h \
+	include/simple_memory.h \
+	include/simple_soc.h
 
 # additional header files
 XINCS           := \
-	lib/array/array.h
+	../../include/cdes.h \
+	../../lib/array/array.h
 
 
 ###############################################################################
@@ -131,12 +127,6 @@ OBJS            := $(COBJS) $(CXXOBJS) $(ASOBJCS)
 # additional object files
 XOBJS           := 
 
-# libraries
-LDLIBS          := 
-
-# additional libraries
-XLDLIBS         := 
-
 
 ###############################################################################
 # Command calls                                                               #
@@ -152,8 +142,7 @@ CXXCOMPILE      = $(CXX) $(CXXFLAGS) -c $< -o $@
 ASCOMPILE       = $(AS) $(ASFLAGS) -c $< -o $@
 
 # link objects
-#LINKOBJS        = $(LD) $(LDFLAGS) $^ -o $@
-LINKOBJS        = $(LD) $(LDFLAGS) $@ $^
+LINKOBJS        = $(LD) $(LDFLAGS_PRE) $^ -o $@ $(LDFLAGS_POST)
 
 
 ###############################################################################

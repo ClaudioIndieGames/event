@@ -1,7 +1,7 @@
 #include <assert.h>
-#include "task.h"
+#include "cdes_task.h"
 
-task* task_create(task* t, void* module, pthread_func_t func, size_t priority) {
+cdes_task* cdes_task_create(cdes_task* t, void* module, cdes_task_func func, size_t priority) {
     assert(t && "Passed NULL task");
     assert(module && "Passed NULL module");
     assert(func && "Passed NULL function");
@@ -11,12 +11,12 @@ task* task_create(task* t, void* module, pthread_func_t func, size_t priority) {
     return t;
 }
 
-void task_destroy(task* t) {
+void cdes_task_destroy(cdes_task* t) {
     assert(t && "Passed NULL task");
     // nop
 }
 
-pthread_func_t task_get_func(task* t) {
+cdes_task_func cdes_task_get_func(cdes_task* t) {
     assert(t && "Passed NULL task");
     return t->func;
 }
