@@ -3,6 +3,8 @@
 #include "cdes_time.h"
 
 cdes_time_string* cdes_time_to_string(cdes_time t, cdes_time_string* s) {
+    assert(t >= 0 && "Passed negative time");
+
     if (t >= 1) {
         snprintf(*s, sizeof(cdes_time_string), "%.3gs", t);
     } else if (t >= 1e-3) {
@@ -16,7 +18,8 @@ cdes_time_string* cdes_time_to_string(cdes_time t, cdes_time_string* s) {
     } else if (t >= 1e-15) {
         snprintf(*s, sizeof(cdes_time_string), "%.3gfs", t * 1e15);
     } else {
-        snprintf(*s, sizeof(cdes_time_string), "0s");
+        snprintf(*s, sizeof(cdes_time_string), "%.3gs", t);
     }
+    
     return s;
 }

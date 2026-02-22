@@ -109,6 +109,7 @@ cdes_time cdes_simulation_get_time(cdes_simulation* sim) {
 void cdes_simulation_event_notify(cdes_simulation* sim, cdes_event* e, cdes_time delay, void* args) {
     assert(sim && "Passed NULL simulation");
     assert(e && "Passed NULL event");
+    assert(delay >= 0 && "Passed negative time");
     assert(delay && "Cannot notify with zero delay");
     cdes_scheduled_event se;
     cdes_scheduled_event_create(&se, e, cdes_simulation_get_time(sim) + delay, args);

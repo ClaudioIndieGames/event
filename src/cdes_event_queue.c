@@ -46,6 +46,7 @@ void cdes_event_queue_pop(cdes_event_queue* eq) {
 cdes_scheduled_event* cdes_scheduled_event_create(cdes_scheduled_event* se, cdes_event* e, cdes_time scheduled_time, void* args) {
     assert(se && "Passed NULL scheduled event");
     assert(e && "Passed NULL event");
+    assert(scheduled_time >= 0 && "Passed negative time");
     se->event = e;
     se->scheduled_time = scheduled_time;
     se->args = args;
