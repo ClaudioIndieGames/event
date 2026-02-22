@@ -6,11 +6,24 @@
 static void* on_receive_msg(void* module, void* args) {
     simple_memory* this = module;
     simple_port_message* msg = args;
-    printf("[%ld, %ld, Memory] Received '%s' from %p\n", cdes_simulation_get_time(this->sim), (unsigned long)pthread_self(), msg->data, msg->from);
-    printf("[%ld, %ld, Memory] Sending 'Hi CPU' in 10\n", cdes_simulation_get_time(this->sim), (unsigned long)pthread_self());
+
+    printf("[%s, %ld, Memory] Received '%s' from %p\n",
+        *cdes_time_to_string(cdes_simulation_get_time(this->sim), &(cdes_time_string){}),
+        (unsigned long)pthread_self(),
+        msg->data,
+        msg->from);
+    
+    cdes_time delay = 10e-3;
     msg->from = this;
     strcpy(msg->data, "Hi CPU\0");
-    simple_port_send(&this->p, msg, 10);
+    simple_port_send(&this->p, msg, delay);
+
+    printf("[%s, %ld, Memory] Sending '%s' in %s\n",
+        *cdes_time_to_string(cdes_simulation_get_time(this->sim), &(cdes_time_string){}),
+        (unsigned long)pthread_self(),
+        msg->data,
+        *cdes_time_to_string(delay, &(cdes_time_string){}));
+
     return NULL;
 }
 

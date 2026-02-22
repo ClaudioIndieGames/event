@@ -75,6 +75,7 @@ MKDIRFLAGS      := -p
 
 # C files to compile
 CSRCS           := \
+	src/cdes_time.c \
 	src/cdes_event.c \
 	src/cdes_task.c \
 	src/cdes_thread.c \

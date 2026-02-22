@@ -6,19 +6,34 @@
 static void* on_sim_start(void* module, void* args) {
     (void)args;
     simple_cpu* this = module;
-    printf("[%ld, %ld, CPU] Sending 'Hi Memory' in 10\n", cdes_simulation_get_time(this->sim), (unsigned long)pthread_self());
+
     simple_port_message* msg = simple_port_message_create(20);
+    cdes_time delay = 10e-3;
     msg->from = this;
     strcpy(msg->data, "Hi Memory\0");
-    simple_port_send(&this->p, msg, 10);
+    simple_port_send(&this->p, msg, delay);
+
+    printf("[%s, %ld, CPU] Sending '%s' in %s\n",
+        *cdes_time_to_string(cdes_simulation_get_time(this->sim), &(cdes_time_string){}),
+        (unsigned long)pthread_self(),
+        msg->data,
+        *cdes_time_to_string(delay, &(cdes_time_string){}));
+
     return NULL;
 }
 
 static void* on_receive_msg(void* module, void* args) {
     simple_cpu* this = module;
     simple_port_message* msg = args;
-    printf("[%ld, %ld, CPU] Received '%s' from %p\n", cdes_simulation_get_time(this->sim), (unsigned long)pthread_self(), msg->data, msg->from);
+
+    printf("[%s, %ld, CPU] Received '%s' from %p\n",
+        *cdes_time_to_string(cdes_simulation_get_time(this->sim), &(cdes_time_string){}),
+        (unsigned long)pthread_self(),
+        msg->data,
+        msg->from);
+    
     simple_port_message_destroy(msg);
+
     return NULL;
 }
 
