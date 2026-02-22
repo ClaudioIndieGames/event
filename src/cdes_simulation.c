@@ -61,7 +61,7 @@ void cdes_simulation_start(cdes_simulation* sim, cdes_simulation_mode mode) {
             size_t pos = array_size(&selected_thread->funcs);
             for (size_t j = 0; j < array_size(&selected_thread->funcs); ++j) {
                 cdes_thread_func* tf = array_at(&selected_thread->funcs, j);
-                if (tf->task->priority < t->priority) {
+                if (tf->task->priority > t->priority) {
                     pos = j;
                     break;
                 }

@@ -38,8 +38,8 @@ static void* on_receive_msg(void* module, void* args) {
 }
 
 simple_cpu* simple_cpu_create(simple_cpu* this, cdes_simulation* sim) {
-    cdes_task_create(&this->on_sim_start, this, on_sim_start, 1);
-    cdes_task_create(&this->on_received_message, this, on_receive_msg, 0);
+    cdes_task_create(&this->on_sim_start, this, on_sim_start, 0);
+    cdes_task_create(&this->on_received_message, this, on_receive_msg, 1);
     cdes_event_register_task(simulation_get_on_simulation_start_event(sim), &this->on_sim_start);
     simple_port_create(&this->p, sim, &this->on_received_message);
     this->sim = sim;
