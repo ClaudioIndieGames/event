@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-typedef void* (*cdes_task_func)(void*, void*);
+typedef void (*cdes_task_func)(void*, void*);
 
 typedef struct {
     void* module;
