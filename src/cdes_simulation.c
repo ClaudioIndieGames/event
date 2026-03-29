@@ -1,5 +1,5 @@
 #include <assert.h>
-#define ARRAY_IMPLEMENTATION
+#define CCC_ARRAY_IMPLEMENTATION
 #include "cdes_simulation.h"
 #include "cdes_thread.h"
 
@@ -9,8 +9,8 @@ cdes_simulation* cdes_simulation_create(cdes_simulation* sim) {
     cdes_event_queue_create(&sim->eq, 10);
     sim->time = 0;
     cdes_event_create(&sim->on_simulation_start_event);
-    // allocating space for 2 threads by default
-    array_create_semi_dynamic(&sim->threads, sizeof(cdes_thread), 2);
+    // allocating space for 1 thread by default
+    ccc_array_create(sizeof(cdes_thread), .header = &sim->threads, .elements_capacity = 1);
     return sim;
 }
 
@@ -18,34 +18,33 @@ void cdes_simulation_destroy(cdes_simulation* sim) {
     assert(sim && "Passed NULL simulation");
     cdes_event_queue_destroy(&sim->eq);
     cdes_event_destroy(&sim->on_simulation_start_event);
-    if (!array_empty(&sim->threads)) {
+    if (!ccc_array_empty(&sim->threads)) {
         assert(0 && "There should not be any thread at this point");
     }
-    array_destroy(&sim->threads);
+    ccc_array_destroy(&sim->threads);
 }
 
 void cdes_simulation_start(cdes_simulation* sim, cdes_simulation_mode mode) {
     assert(sim && "Passed NULL simulation");
 
     // schedule the on simulation start event first
-    cdes_scheduled_event* se = &(cdes_scheduled_event){0};
-    cdes_scheduled_event_create(se, &sim->on_simulation_start_event, 0, NULL);
-    cdes_event_queue_push_copy(&sim->eq, se);
+    cdes_event_queue_push(&sim->eq, &sim->on_simulation_start_event, 0, NULL);
+    const cdes_scheduled_event* se = cdes_event_queue_front(&sim->eq);
 
     // iterate the scheduled events
     while (se != NULL) {
         
         // iterate the tasks registered to the current event
-        array* rt = &se->event->registered_tasks;
-        for (size_t i = 0; i < array_size(rt); ++i) {
-            cdes_task* t = *(cdes_task**)array_at(rt, i);
+        ccc_array* rt = &se->event->registered_tasks;
+        for (size_t i = 0; i < ccc_array_size(rt); ++i) {
+            cdes_task* t = ccc_array_at(rt, i);
 
             // check if a thread for the active module already exist, and if not create it
             cdes_thread* selected_thread = NULL;
-            for (size_t j = 0; j < array_size(&sim->threads); ++j) {
-                cdes_thread* th = array_at(&sim->threads, j);
-                if (!array_empty(&th->funcs)) {
-                    cdes_thread_func* tf = array_at(&th->funcs, 0);
+            for (size_t j = 0; j < ccc_array_size(&sim->threads); ++j) {
+                cdes_thread* th = ccc_array_at(&sim->threads, j);
+                if (!ccc_array_empty(&th->funcs)) {
+                    cdes_thread_func* tf = ccc_array_at(&th->funcs, 0);
                     if (tf->task->module == t->module) {
                         selected_thread = th;
                         break;
@@ -53,20 +52,20 @@ void cdes_simulation_start(cdes_simulation* sim, cdes_simulation_mode mode) {
                 }
             }
             if (selected_thread == NULL) {
-                selected_thread = array_append_slot(&sim->threads);
+                selected_thread = ccc_array_append(&sim->threads);
                 cdes_thread_create(selected_thread);
             }
 
             // insert the task sorted by priority in the selected thread
-            size_t pos = array_size(&selected_thread->funcs);
-            for (size_t j = 0; j < array_size(&selected_thread->funcs); ++j) {
-                cdes_thread_func* tf = array_at(&selected_thread->funcs, j);
+            size_t pos = ccc_array_size(&selected_thread->funcs);
+            for (size_t j = 0; j < ccc_array_size(&selected_thread->funcs); ++j) {
+                cdes_thread_func* tf = ccc_array_at(&selected_thread->funcs, j);
                 if (tf->task->priority > t->priority) {
                     pos = j;
                     break;
                 }
             }
-            cdes_thread_func* new_tf = array_insert_slot(&selected_thread->funcs, pos);
+            cdes_thread_func* new_tf = ccc_array_insert(&selected_thread->funcs, pos);
             cdes_thread_func_create(new_tf, t, se->args);
 
         }
@@ -79,17 +78,17 @@ void cdes_simulation_start(cdes_simulation* sim, cdes_simulation_mode mode) {
         if (se == NULL || sim->time != se->scheduled_time) {
 
             // run all threads
-            for (size_t i = 0; i < array_size(&sim->threads); ++i) {
-                cdes_thread* t = array_at(&sim->threads, i);
+            for (size_t i = 0; i < ccc_array_size(&sim->threads); ++i) {
+                cdes_thread* t = ccc_array_at(&sim->threads, i);
                 cdes_thread_run(t, mode);
             }
 
             // destroy all threads
-            for (size_t i = 0; i < array_size(&sim->threads); ++i) { 
-                cdes_thread* t = array_at(&sim->threads, i);
+            for (size_t i = 0; i < ccc_array_size(&sim->threads); ++i) { 
+                cdes_thread* t = ccc_array_at(&sim->threads, i);
                 cdes_thread_destroy(t, mode);
             }
-            array_clear(&sim->threads);
+            ccc_array_clear(&sim->threads);
 
             // after the run some new events might have been triggered
             se = cdes_event_queue_front(&sim->eq);
@@ -111,9 +110,7 @@ void cdes_simulation_event_notify(cdes_simulation* sim, cdes_event* e, cdes_time
     assert(e && "Passed NULL event");
     assert(delay >= 0 && "Passed negative time");
     assert(delay && "Cannot notify with zero delay");
-    cdes_scheduled_event se;
-    cdes_scheduled_event_create(&se, e, cdes_simulation_get_time(sim) + delay, args);
-    cdes_event_queue_push_copy(&sim->eq, &se);
+    cdes_event_queue_push(&sim->eq, e, cdes_simulation_get_time(sim) + delay, args);
 }
 
 cdes_event* simulation_get_on_simulation_start_event(cdes_simulation* sim) {

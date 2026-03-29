@@ -3,7 +3,7 @@
 #include <string.h>
 #include "simple_memory.h"
 
-static void* on_request_received(void* module, void* args) {
+static void on_request_received(void* module, void* args) {
     simple_memory* this = module;
     simple_payload* payload = args;
 
@@ -23,8 +23,6 @@ static void* on_request_received(void* module, void* args) {
         (unsigned long)pthread_self(),
         payload->data,
         *cdes_time_to_string(delay, &(cdes_time_string){}));
-
-    return NULL;
 }
 
 simple_memory* simple_memory_create(simple_memory* this, cdes_simulation* sim) {

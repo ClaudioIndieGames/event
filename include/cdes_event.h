@@ -1,11 +1,11 @@
 #ifndef __CDES_EVENT_H__
 #define __CDES_EVENT_H__
 
-#include "array.h"
+#include "ccc_array.h"
 #include "cdes_task.h"
 
 typedef struct {
-    array registered_tasks;
+    ccc_array registered_tasks;
 } cdes_event;
 
 cdes_event* cdes_event_create(cdes_event* e);

@@ -14,7 +14,8 @@ BIN             := build
 ###############################################################################
 
 # C compiler
-CC              := gcc
+#CC              := gcc
+CC              := nvcc
 
 # C++ compiler
 CXX             := g++
@@ -23,7 +24,8 @@ CXX             := g++
 AS              := gcc
 
 # linker
-LD              := gcc
+#LD              := gcc
+LD              := nvcc
 
 # object dump
 OBJDUMP         := objdump
@@ -43,7 +45,9 @@ MKDIR           := mkdir
 ###############################################################################
 
 # C flags
-CFLAGS          := -O0 -Wall -Wextra -ggdb -Iinclude -I../../include -I../../lib/array
+#CFLAGS          := -O0 -Wall -Wextra -Wno-override-init -ggdb -Iinclude -I../../include -I../../lib/ccc_array -fsanitize=address -fno-omit-frame-pointer
+#CFLAGS          := -O0 -Wall -Wextra -Wno-override-init -ggdb -Iinclude -I../../include -I../../lib/ccc_array
+CFLAGS          := -O0 -g -Iinclude -I../../include -I../../lib/ccc_array
 
 # C++ flags
 CXXFLAGS        := 
@@ -53,6 +57,7 @@ ASFLAGS         :=
 
 # linker flags
 LDFLAGS_PRE     := 
+#LDFLAGS_POST    := -L../.. -lcdes -lpthread -fsanitize=address -fno-omit-frame-pointer
 LDFLAGS_POST    := -L../.. -lcdes -lpthread
 
 # object dump flags
@@ -105,7 +110,7 @@ INCS            := \
 # additional header files
 XINCS           := \
 	../../include/cdes.h \
-	../../lib/array/array.h
+	../../lib/ccc_array/ccc_array.h
 
 
 ###############################################################################

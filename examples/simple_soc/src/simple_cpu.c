@@ -3,7 +3,7 @@
 #include <string.h>
 #include "simple_cpu.h"
 
-static void* on_sim_start(void* module, void* args) {
+static void on_sim_start(void* module, void* args) {
     (void)args;
     simple_cpu* this = module;
 
@@ -18,11 +18,9 @@ static void* on_sim_start(void* module, void* args) {
         (unsigned long)pthread_self(),
         payload->data,
         *cdes_time_to_string(delay, &(cdes_time_string){}));
-
-    return NULL;
 }
 
-static void* on_response_received(void* module, void* args) {
+static void on_response_received(void* module, void* args) {
     simple_cpu* this = module;
     simple_payload* payload = args;
 
@@ -33,8 +31,6 @@ static void* on_response_received(void* module, void* args) {
         payload->from);
     
     simple_payload_destroy(payload);
-
-    return NULL;
 }
 
 simple_cpu* simple_cpu_create(simple_cpu* this, cdes_simulation* sim) {

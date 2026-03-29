@@ -14,7 +14,8 @@ BIN             := build
 ###############################################################################
 
 # C compiler
-CC              := gcc
+#CC              := gcc
+CC              := nvcc
 
 # C++ compiler
 CXX             := g++
@@ -44,7 +45,10 @@ MKDIR           := mkdir
 ###############################################################################
 
 # C flags
-CFLAGS          := -O0 -Wall -Wextra -ggdb -Iinclude -Ilib/array
+#CFLAGS          := -O0 -Wall -Wextra -Wno-override-init -ggdb -Iinclude -Ilib/ccc_array -fsanitize=address -fno-omit-frame-pointer
+#CFLAGS          := -O0 -Wall -Wextra -Wno-override-init -ggdb -Iinclude -Ilib/ccc_array
+#CFLAGS          := -O0 -g -Iinclude -Ilib/ccc_array -Xcompiler "/Fd$(BIN)\\vc140.pdb"
+CFLAGS          := -O0 -g -Iinclude -Ilib/ccc_array
 
 # C++ flags
 CXXFLAGS        := 
@@ -109,7 +113,7 @@ INCS            := \
 
 # additional header files
 XINCS           := \
-	lib/array/array.h
+	lib/ccc_array/ccc_array.h
 
 
 ###############################################################################
@@ -205,4 +209,4 @@ bin:
 # remove previous build
 .PHONY: clean
 clean:
-	$(RM) $(RMFLAGS) $(BIN) $(BIN)/$(EXE)
+	$(RM) $(RMFLAGS) $(BIN)/$(EXE) $(BIN)

@@ -2,12 +2,12 @@
 #define __CDES_THREAD_H__
 
 #include <pthread.h>
-#include "array.h"
+#include "ccc_array.h"
 #include "cdes_task.h"
 #include "cdes_simulation.h"
 
 typedef struct {
-    array funcs;
+    ccc_array funcs;
     pthread_t id;
 } cdes_thread;
 

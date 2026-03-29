@@ -11,7 +11,7 @@ typedef enum {
 typedef struct {
     cdes_event_queue eq;
     cdes_time time;
-    array threads;
+    ccc_array threads;
     cdes_event on_simulation_start_event;
 } cdes_simulation;
 

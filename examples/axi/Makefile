@@ -43,7 +43,7 @@ MKDIR           := mkdir
 ###############################################################################
 
 # C flags
-CFLAGS          := -O0 -Wall -Wextra -ggdb -Iinclude -I../../include -I../../lib/array
+CFLAGS          := -O0 -Wall -Wextra -ggdb -Iinclude -I../../include -I../../lib/ccc_array
 
 # C++ flags
 CXXFLAGS        := 
@@ -101,7 +101,7 @@ INCS            := \
 # additional header files
 XINCS           := \
 	../../include/cdes.h \
-	../../lib/array/array.h
+	../../lib/ccc_array/ccc_array.h
 
 
 ###############################################################################
